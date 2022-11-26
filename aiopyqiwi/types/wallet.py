@@ -54,3 +54,32 @@ class Wallet:
             ) as response:
                 return (await response.json())["data"]
 
+    async def transfer(self, amount: float, comment: str, to: str) -> dict:
+        """
+        Перевод денег на другой кошелек.
+        """
+        if not re.match(r"^(7|8|\+7)\d{10}$", to):
+            raise ValueError("to must be in +7XXXXXXXXXX format")
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                    f"https://edge.qiwi.com/sinap/api/v2/terms/99/payments",
+                    json={
+                        "id": "string",
+                        "sum": {
+                            "amount": amount,
+                            "currency": "643"
+                        },
+                        "paymentMethod": {
+                            "type": "Account",
+                            "accountId": "643"
+                        },
+                        "fields": {
+                            "account": to
+                        },
+                        "comment": comment
+                    },
+                    headers=self.HEADERS,
+            ) as response:
+                return await response.json()
+
