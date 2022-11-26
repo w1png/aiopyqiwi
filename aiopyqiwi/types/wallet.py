@@ -1,5 +1,6 @@
 import aiohttp
 import re
+import bill
 
 
 class Wallet:
@@ -13,7 +14,7 @@ class Wallet:
             raise ValueError("phone must in +7XXXXXXXXXX format")
         self.phone = phone
 
-        self.HEADERS = {
+        self.__HEADERS = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.token}"
@@ -25,7 +26,7 @@ class Wallet:
         Получение информации о профиле.
         """
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://edge.qiwi.com/person-profile/v1/profile/current", headers=self.HEADERS) as response:
+            async with session.get("https://edge.qiwi.com/person-profile/v1/profile/current", headers=self.__HEADERS) as response:
                 return await response.json()
 
     @property
@@ -34,7 +35,7 @@ class Wallet:
         Получение баланса кошелька в рублях.
         """
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://edge.qiwi.com/funding-sources/v2/persons/{self.phone}/accounts", headers=self.HEADERS) as response:
+            async with session.get(f"https://edge.qiwi.com/funding-sources/v2/persons/{self.phone}/accounts", headers=self.__HEADERS) as response:
                 return (await response.json())["accounts"][0]["balance"]["amount"]
 
     async def get_history(self, rows: int=10, operation: str="IN") -> list:
@@ -50,7 +51,7 @@ class Wallet:
             async with session.get(
                     f"https://edge.qiwi.com/payment-history/v2/persons/{self.phone}/payments",
                     params={"rows": rows, "operation": operation},
-                    headers=self.HEADERS,
+                    headers=self.__HEADERS,
             ) as response:
                 return (await response.json())["data"]
 
@@ -79,7 +80,7 @@ class Wallet:
                         },
                         "comment": comment
                     },
-                    headers=self.HEADERS,
+                    headers=self.__HEADERS,
             ) as response:
                 return await response.json()
 
