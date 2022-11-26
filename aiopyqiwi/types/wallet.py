@@ -1,4 +1,5 @@
 import aiohttp
+import re
 
 
 class Wallet:
@@ -7,7 +8,11 @@ class Wallet:
     """
     def __init__(self, token: str, phone: str) -> None:
         self.token = token
+
+        if not re.match(r"^(7|8|\+7)\d{10}$", phone):
+            raise ValueError("phone must in +7XXXXXXXXXX format")
         self.phone = phone
+
         self.HEADERS = {
             "Accept": "application/json",
             "Content-Type": "application/json",

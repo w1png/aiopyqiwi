@@ -24,6 +24,10 @@ class TestWallet:
         assert self.wallet.token == TOKEN
         assert self.wallet.phone == PHONE_NUMBER
 
+    def test_init_error(self):
+        with pytest.raises(ValueError):
+            Wallet(token=TOKEN, phone="99999999999")
+
     async def test_profile(self):
         profile = await self.wallet.profile
         assert isinstance(profile, dict)
@@ -38,9 +42,11 @@ class TestWallet:
         assert isinstance(history, list)
         assert len(history) == 10
 
+    async def test_get_history_rows(self):
         history_rows = await self.wallet.get_history(rows=20)
         assert len(history_rows) == 20
 
+    async def test_get_history_operation(self):
         history_all = await self.wallet.get_history(operation="ALL")
         assert len(history_all) == 10
 
