@@ -1,5 +1,6 @@
 import aiohttp
 
+
 class Wallet:
     """
     Класс для работы с кошельком.
@@ -19,8 +20,7 @@ class Wallet:
         Получение информации о профиле.
         """
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://edge.qiwi.com/person-profile/v1/profile/current", headers=self.HEADERS) as response:
-                print (await response.json())
+            async with session.get("https://edge.qiwi.com/person-profile/v1/profile/current", headers=self.HEADERS) as response:
                 return await response.json()
 
     @property
@@ -41,12 +41,11 @@ class Wallet:
         if rows > 50:
             raise ValueError("rows must be less than 50")
 
-
         async with aiohttp.ClientSession() as session:
             async with session.get(
                     f"https://edge.qiwi.com/payment-history/v2/persons/{self.phone}/payments",
                     params={"rows": rows, "operation": operation},
                     headers=self.HEADERS,
-                ) as response:
+            ) as response:
                 return (await response.json())["data"]
 
